@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>vkhanhh v2 - Tool Tài Xỉu MD5</title>
+  <style>
+    body {
+      background-color: #10131a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+    textarea {
+      width: 400px;
+      height: 100px;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 16px;
+      resize: none;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      background-color: #ff4757;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 40px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Dán mã MD5 vào để phân tích</h2>
+  <textarea id="md5Input" placeholder="VD: a4b8c9d1234f567890abcdef98765432"></textarea><br>
+  <button onclick="analyze()">Phân tích</button>
+  <div id="result"></div>
+
+  <script>
+    function analyze() {
+      const input = document.getElementById("md5Input").value.trim().toLowerCase();
+      const result = document.getElementById("result");
+
+      if (input.length !== 32 || !/^[a-f0-9]{32}$/.test(input)) {
+        result.innerHTML = "❌ Mã MD5 không hợp lệ!";
+        return;
+      }
+
+      // Phân tích toàn diện từng ký tự
+      let letters = 0, digits = 0, valueSum = 0;
+
+      for (let i = 0; i < input.length; i++) {
+        const char = input[i];
+        const isDigit = !isNaN(parseInt(char));
+        if (isDigit) {
+          digits++;
+          valueSum += parseInt(char);
+        } else {
+          letters++;
+          valueSum += char.charCodeAt(0) - 87; // a=10, b=11, ..., f=15
+        }
+      }
+
+      // Cân đối điểm dựa trên phân phối giá trị
+      const average = valueSum / 32;
+
+      // Logic xác suất nâng cao (tuỳ chỉnh theo cảm quan bạn muốn)
+      let taiRate = (average + (letters - digits) * 0.3) * 3.1;
+      let xiuRate = 100 - taiRate;
+
+      if (taiRate < 0) taiRate = 0;
+      if (taiRate > 100) taiRate = 100;
+      xiuRate = 100 - taiRate;
+
+      result.innerHTML = `
+        🔴 Tài: ${taiRate.toFixed(2)}%<br>
+        🔵 Xỉu: ${xiuRate.toFixed(2)}%
+      `;
+    }
+  </script>
+</body>
+</html>
